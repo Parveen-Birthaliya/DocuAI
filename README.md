@@ -23,40 +23,40 @@
 ```
 Raw Documents
     ↓
-[BLOG 1] Corpus Audit & Quality Baselining
+[Stage 1] Corpus Audit & Quality Baselining
     ├─ Format detection (8 formats)
     ├─ Quality scoring (GPT-2 perplexity)
     └─ Routing table generation
     ↓
-[BLOG 2] Format-Aware Parsing
+[Stage 2] Format-Aware Parsing
     ├─ PDF text/OCR extraction
     ├─ HTML structure preservation
     ├─ CSV/JSON/TXT parsing
     └─ Intelligent routing
     ↓
-[BLOG 3] Text Cleaning & Noise Elimination
+[Stage 3] Text Cleaning & Noise Elimination
     ├─ Tier 1: Heuristic filters
     ├─ Tier 2: Statistical quality gating
     └─ Tier 3: Boilerplate removal
     ↓
-[BLOG 4] Structured Knowledge Extraction
+[Stage 4] Structured Knowledge Extraction
     ├─ Table extraction
     ├─ Metadata extraction
     ├─ Code block identification
     └─ Document structure analysis
     ↓
-[BLOG 5] Deduplication & Consolidation
+[Stage 5] Deduplication & Consolidation
     ├─ Multi-metric similarity (5 metrics)
     ├─ Duplicate detection & grouping
     └─ Knowledge merging
     ↓
-[BLOG 6] Embedding & Retrieval
+[Stage 6] Embedding & Retrieval
     ├─ Intelligent chunking
     ├─ Semantic embeddings (384-dim)
     ├─ FAISS vector indexing
     └─ Similarity search
     ↓
-[BLOG 7] RAG - User Interfaces
+[Stage 7] RAG - User Interfaces
     ├─ CLI interactive mode
     ├─ REST API (Flask)
     ├─ Web UI (Streamlit)
@@ -139,13 +139,13 @@ print(f"Sources: {answer.sources}")
 ```
 docuai/
 ├── src/
-│   ├── blog1_audit/           # Stage 1: Corpus audit
-│   ├── blog2_parsing/         # Stage 2: Format parsing
-│   ├── blog3_cleaning/        # Stage 3: Text cleaning
-│   ├── blog4_extraction/      # Stage 4: Knowledge extraction
-│   ├── blog5_dedup/           # Stage 5: Deduplication
-│   ├── blog6_embedding/       # Stage 6: Embedding & retrieval
-│   ├── blog7_rag/             # Stage 7: RAG interfaces
+│   ├── audit/           # Stage 1: Corpus audit
+│   ├── parsing/         # Stage 2: Format parsing
+│   ├── cleaning/        # Stage 3: Text cleaning
+│   ├── extraction/      # Stage 4: Knowledge extraction
+│   ├── dedup/           # Stage 5: Deduplication
+│   ├── embedding/       # Stage 6: Embedding & retrieval
+│   ├── rag/             # Stage 7: RAG interfaces
 │   ├── utils/                 # Shared utilities
 │   ├── chunking/              # Chunking strategies
 │   ├── embedding/             # Embedding models
@@ -175,15 +175,15 @@ paths:
   data_dir: data
   processed_path: data/processed
 
-blog1:
+Stage1:
   sample_size: 100
 
-blog6:
+Stage6:
   embedding_model: all-MiniLM-L6-v2
   chunk_size: 512
   chunk_overlap: 50
 
-blog7:
+Stage7:
   mode: cli
   llm_model: mock
   api_port: 5000
@@ -193,13 +193,13 @@ blog7:
 
 | Stage | Speed | Memory |
 |-------|-------|--------|
-| Blog 1 (Audit) | 5-10s/100 docs | ~200MB |
-| Blog 2 (Parsing) | 30-60s/100 docs | ~300MB |
-| Blog 3 (Cleaning) | 10-20s/100 docs | ~200MB |
-| Blog 4 (Extraction) | 20-30s/100 docs | ~250MB |
-| Blog 5 (Dedup) | 15-30s/100 docs | ~500MB |
-| Blog 6 (Embedding) | 5-10s/100 docs | ~800MB |
-| **Blog 7 (RAG)** | **100-500ms/query** | **1-1.2GB** |
+| Stage 1 (Audit) | 5-10s/100 docs | ~200MB |
+| Stage 2 (Parsing) | 30-60s/100 docs | ~300MB |
+| Stage 3 (Cleaning) | 10-20s/100 docs | ~200MB |
+| Stage 4 (Extraction) | 20-30s/100 docs | ~250MB |
+| Stage 5 (Dedup) | 15-30s/100 docs | ~500MB |
+| Stage 6 (Embedding) | 5-10s/100 docs | ~800MB |
+| **Stage 7 (RAG)** | **100-500ms/query** | **1-1.2GB** |
 
 ## 🌐 Deployment
 
@@ -284,13 +284,13 @@ RAGAnswerer.answer(question)
 
 ## ✅ Completion Status
 
-- ✅ Blog 1: Corpus Audit & Quality Baselining
-- ✅ Blog 2: Format-Aware Parsing
-- ✅ Blog 3: Text Cleaning & Noise Elimination
-- ✅ Blog 4: Structured Knowledge Extraction
-- ✅ Blog 5: Deduplication & Consolidation
-- ✅ Blog 6: Embedding & Retrieval
-- ✅ Blog 7: RAG System - User Interface & Deployment
+- ✅ Stage 1: Corpus Audit & Quality Baselining
+- ✅ Stage 2: Format-Aware Parsing
+- ✅ Stage 3: Text Cleaning & Noise Elimination
+- ✅ Stage 4: Structured Knowledge Extraction
+- ✅ Stage 5: Deduplication & Consolidation
+- ✅ Stage 6: Embedding & Retrieval
+- ✅ Stage 7: RAG System - User Interface & Deployment
 
 **Status**: 🎉 **Complete & Production Ready**
 
