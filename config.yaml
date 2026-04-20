@@ -1,0 +1,247 @@
+# DocuAI Configuration - Adjust these values for your setup
+
+# Project Paths
+paths:
+  raw_corpus: "data/raw_corpus"
+  processed: "data/processed"
+  metadata: "data/metadata"
+  embeddings: "data/processed/embeddings.faiss"
+  models: "models"  # For downloaded pre-trained models
+
+# BLOG 1: Corpus Audit & Quality Baselining
+blog1_audit:
+  # Format Types to support
+  supported_formats:
+    - pdf
+    - html
+    - json
+    - csv
+    - txt
+    - md
+    - py
+  
+  # Quality Scoring (using transformers instead of kenlm)
+  perplexity_model: "gpt2"  # Free, CPU-runnable
+  min_language_confidence: 0.7
+  
+  # PDF-specific audit
+  pdf:
+    ocr_quality_threshold: 200  # Perplexity threshold for OCR quality
+    scanned_threshold: 0.001    # Char density to classify as scanned
+  
+  # HTML-specific audit
+  html:
+    content_ratio_threshold: 0.15  # <15% = high boilerplate
+  
+  # Save audit results
+  save_audit_logs: true
+  audit_log_path: "data/processed/audit_logs"
+
+# BLOG 2: Format-Aware Parsing
+blog2_parsing:
+  # OCR Engine
+  ocr_engine: "tesseract"  # Options: tesseract, paddleocr (we use tesseract - free)
+  tesseract_path: null  # Auto-detect, or set path if needed
+  
+  # PDF Parsing
+  pdf:
+    extraction_method: "pymupdf"  # pymupdf or pdfplumber
+    detect_columns: true
+    preserve_layout: true
+  
+  # HTML Parsing
+  html:
+    use_trafilatura: true
+    include_tables: true
+  
+  # Timeout for long parsing operations
+  timeout_seconds: 30
+  
+  # Save parsed output
+  save_parsed: true
+  parsed_path: "data/processed/parsed"
+
+# BLOG 3: Text Cleaning & Noise Elimination
+blog3_cleaning:
+  # Tier 1: Heuristic Filters
+  tier1:
+    enabled: true
+    min_word_count: 50
+    max_word_count: 100000
+    min_mean_word_length: 3.0
+    max_mean_word_length: 10.0
+    max_symbol_ratio: 0.10
+    min_alpha_ratio: 0.70
+    max_repeated_line_fraction: 0.30
+    max_duplicate_5gram_fraction: 0.20
+  
+  # Tier 2: ML-Based Quality Scoring
+  tier2:
+    enabled: true
+    perplexity_threshold: 300  # Higher = lower quality (GPT-2)
+    language_confidence_threshold: 0.8
+  
+  # Tier 3: LLM-Based Gate (optional, uses HF Inference API free tier)
+  tier3:
+    enabled: false  # Set to true to use LLM gate
+    model: "gpt2"  # or other free model
+  
+  # Boilerplate Detection
+  boilerplate:
+    enabled: true
+    n_gram_size: 8
+    corpus_threshold: 0.05  # Appears in >5% of docs = boilerplate
+  
+  # Encoding Normalization
+  normalization:
+    nfc: true  # Unicode NFC normalization
+    remove_control_chars: true
+  
+  # Save cleaned output
+  save_cleaned: true
+  cleaned_path: "data/processed/cleaned"
+
+# BLOG 4: Structured Knowledge Extraction
+blog4_extraction:
+  # Table Extraction
+  table_extraction:
+    enabled: true
+    method: "pdfplumber"  # pdfplumber for PDFs, camelot as fallback
+  
+  # Figure Extraction
+  figure_extraction:
+    enabled: true
+    extract_captions: true
+  
+  # Metadata Enrichment
+  metadata:
+    extract_metadata: true
+    required_fields:
+      - source
+      - format_type
+      - doc_type
+  
+  # Save extracted output
+  save_extracted: true
+  extracted_path: "data/processed/extracted"
+
+# BLOG 5: Deduplication, Validation & Feedback Loop
+blog5_dedup:
+  # Exact Deduplication (SHA-256)
+  exact_dedup:
+    enabled: true
+    keep_strategy: "newest"  # Keep newest version of duplicates
+  
+  # Near-Duplicate Detection (MinHash LSH)
+  near_dedup:
+    enabled: true
+    jaccard_threshold: 0.80  # Will be calibrated per corpus
+    num_perm: 128  # Number of hash functions
+    ngram_size: 5  # Character-level n-grams
+  
+  # Validation
+  validation:
+    enabled: true
+    schema_validation: true
+    coherence_check: true
+  
+  # Baseline Metrics
+  baseline:
+    enabled: true
+    sample_fraction: 0.05  # Embed 5% for baseline
+    reference_query_count: 100  # 100-200 ref queries for baseline
+  
+  # Save dedup output
+  save_deduplicated: true
+  deduplicated_path: "data/processed/deduplicated"
+
+# Embeddings
+embedding:
+  # Model
+  model_name: "sentence-transformers/all-MiniLM-L6-v2"
+  embedding_dim: 384
+  batch_size: 32
+  device: "cpu"  # Use CPU (no GPU required)
+  
+  # FAISS Index
+  faiss:
+    index_type: "Flat"  # Simple CPU index
+    save_path: "data/processed/embeddings.faiss"
+    save_metadata: true
+    metadata_path: "data/metadata/chunk_metadata.json"
+
+# Chunking
+chunking:
+  strategy: "semantic"  # semantic or fixed
+  
+  # For semantic chunking
+  semantic:
+    max_tokens: 512
+    overlap_tokens: 100
+    min_tokens: 50
+    split_at_paragraph: true
+  
+  # For fixed chunking (fallback)
+  fixed:
+    chunk_size: 512
+    overlap: 100
+  
+  preserve_structure: true  # Keep heading info, table boundaries
+
+# Retrieval
+retrieval:
+  top_k: 5  # Return top-5 results
+  similarity_threshold: 0.0  # No threshold (return top-k regardless)
+  rerank: false  # Optional: enable for re-ranking
+  
+  # Hybrid search settings (future)
+  hybrid: false
+  bm25_weight: 0.3
+  semantic_weight: 0.7
+
+# LLM Configuration
+llm:
+  # Local LLM using Ollama (free)
+  local:
+    enabled: false  # Set to true if Ollama is running
+    model: "mistral"  # Download via: ollama pull mistral
+    base_url: "http://localhost:11434"
+  
+  # HuggingFace Inference API (free tier)
+  huggingface:
+    enabled: true
+    model: "gpt2"  # Free inference
+    api_key: "${HF_TOKEN}"  # Set via environment
+  
+  # Generation parameters
+  max_length: 512
+  temperature: 0.7
+  top_p: 0.9
+
+# Logging
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/docuai.log"
+  console: true
+
+# Pipeline Execution
+pipeline:
+  # Which stages to run
+  stages:
+    blog1_audit: true
+    blog2_parsing: true
+    blog3_cleaning: true
+    blog4_extraction: true
+    blog5_dedup: true
+    chunking: true
+    embedding: true
+  
+  # Parallel processing
+  n_workers: 4
+  batch_size: 32
+  
+  # Timing
+  verbose: true
+  save_timings: true
+  timings_path: "data/metadata/pipeline_timings.json"
